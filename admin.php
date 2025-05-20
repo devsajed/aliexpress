@@ -1,29 +1,8 @@
-<?php
-require_once "connect.php";
-
-$id = $_GET['id'];
-$product = $conn->query("SELECT * FROM products WHERE id=$id")->fetch_assoc();
-
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $name = $_POST['name'];
-    $price = $_POST['price'];
-
-    if ($_FILES['image']['name']) {
-        $image = $_FILES['image']['name'];
-        $tmp = $_FILES['image']['tmp_name'];
-        move_uploaded_file($tmp, "assets/img/$image");
-        $conn->query("UPDATE products SET name='$name', price='$price', image='$image' WHERE id=$id");
-    } else {
-        $conn->query("UPDATE products SET name='$name', price='$price' WHERE id=$id");
-    }
-
-    header("Location: index.php");
-}
-?>
+<?php require_once "connect.php"; ?>
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
+  <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Admin Dashboard for Product Management">
   <meta name="author" content="sajedul islam  ">
@@ -33,15 +12,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   <meta name="revisit-after" content="1 days">
   <meta name="language" content="English">
   <meta name="keywords" content="Admin, Dashboard, Product, Management">
-  <title>Add Product</title>
+  <title>Admin Dashboard</title>
   <!-- Boostrap 5.3.0  -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <!-- Main CSS  -->
-  <link rel="stylesheet" href="assets/css/style.css">
+   <!-- Main CSS  -->
+  <link rel="stylesheet" href="assets/css/style.css"> 
 </head>
-<body >
+<body>
 <!-- Navigation Bar -->
-<div class="container py-3">
+<div class="container py-3 bg-light">
   <div class="row  align-items-center">
     <div class="col-4">
       <div class="logo">
@@ -81,26 +60,39 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 
 
-<div class="container">
-  <h2>Edit Product</h2>
-  <form method="POST" enctype="multipart/form-data">
-    <div class="mb-3">
-      <label>Product Name</label>
-      <input type="text" name="name" class="form-control" value="<?= $product['name'] ?>" required>
-    </div>
-    <div class="mb-3">
-      <label>Price</label>
-      <input type="number" name="price" class="form-control" value="<?= $product['price'] ?>" required>
-    </div>
-    <div class="mb-3">
-      <label>Current Image:</label><br>
-      <img src="assets/img/<?= $product['image'] ?>" width="100"><br>
-      <label class="mt-2">Change Image</label>
-      <input type="file" name="image" class="form-control">
-    </div>
-    <button type="submit" class="btn btn-success">Update</button>
-    <a href="index.php" class="btn btn-secondary">Back</a>
-  </form>
+<!-- admin Dashboard  -->
+<div class="container mt-5">
+  <h2 class="mb-4 "> Product Admin Dashboard</h2>
+
+  <a href="add.php" class="btn btn-success mb-3">+ Add Product</a>
+
+  <table class="table table-bordered table-hover bg-white">
+    <thead>
+      <tr>
+        <th>Image</th>
+        <th>Name</th>
+        <th>Price</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+    <?php
+    $res = $conn->query("SELECT * FROM products ORDER BY id DESC");
+    while ($row = $res->fetch_assoc()) { ?>
+      <tr>
+        <td><img src="assets/img/<?= $row['image'] ?>" width="120"></td>
+        <td><?= $row['name'] ?></td>
+        <td>$<?= $row['price'] ?></td>
+        <td>
+          <a href="edit.php?id=<?= $row['id'] ?>" class="btn btn-warning btn-sm">Edit</a>
+          <a href="delete.php?id=<?= $row['id'] ?>" class="btn btn-danger btn-sm" onclick="return confirm('Delete this product?')">Delete</a>
+        </td>
+      </tr>
+    <?php } ?>
+
+      
+    </tbody>
+  </table>
 </div>
 
   <!-- Footer area -->

@@ -1,47 +1,26 @@
 <?php
 require_once "connect.php";
-
-$id = $_GET['id'];
-$product = $conn->query("SELECT * FROM products WHERE id=$id")->fetch_assoc();
-
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $name = $_POST['name'];
-    $price = $_POST['price'];
-
-    if ($_FILES['image']['name']) {
-        $image = $_FILES['image']['name'];
-        $tmp = $_FILES['image']['tmp_name'];
-        move_uploaded_file($tmp, "assets/img/$image");
-        $conn->query("UPDATE products SET name='$name', price='$price', image='$image' WHERE id=$id");
-    } else {
-        $conn->query("UPDATE products SET name='$name', price='$price' WHERE id=$id");
-    }
-
-    header("Location: index.php");
-}
 ?>
+
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta charset="UTF-8">
+  <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>All products</title>
   <meta name="description" content="Admin Dashboard for Product Management">
-  <meta name="author" content="sajedul islam  ">
+  <meta name="author" content="sajedul islam">
   <meta name="robots" content="index, follow">
   <meta name="googlebot" content="index, follow">
   <meta name="google" content="notranslate">
-  <meta name="revisit-after" content="1 days">
-  <meta name="language" content="English">
-  <meta name="keywords" content="Admin, Dashboard, Product, Management">
-  <title>Add Product</title>
-  <!-- Boostrap 5.3.0  -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- boostrap 5.3.0  -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
   <!-- Main CSS  -->
   <link rel="stylesheet" href="assets/css/style.css">
 </head>
-<body >
-<!-- Navigation Bar -->
-<div class="container py-3">
+<body>
+
+<div class="container py-3 bg-light">
   <div class="row  align-items-center">
     <div class="col-4">
       <div class="logo">
@@ -79,29 +58,36 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   </div>
 </div>
 
-
+  <!-- All products  -->
+<div class="container">
+  <div class="row">
+    <div class="col-12 text-center mt-5 mb-5">
+      <h4>All Products</h4>
+      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
+    </div>
+  </div>
+ <!-- products card  -->
+</div>
 
 <div class="container">
-  <h2>Edit Product</h2>
-  <form method="POST" enctype="multipart/form-data">
-    <div class="mb-3">
-      <label>Product Name</label>
-      <input type="text" name="name" class="form-control" value="<?= $product['name'] ?>" required>
-    </div>
-    <div class="mb-3">
-      <label>Price</label>
-      <input type="number" name="price" class="form-control" value="<?= $product['price'] ?>" required>
-    </div>
-    <div class="mb-3">
-      <label>Current Image:</label><br>
-      <img src="assets/img/<?= $product['image'] ?>" width="100"><br>
-      <label class="mt-2">Change Image</label>
-      <input type="file" name="image" class="form-control">
-    </div>
-    <button type="submit" class="btn btn-success">Update</button>
-    <a href="index.php" class="btn btn-secondary">Back</a>
-  </form>
+  <div class="row">
+    <?php
+    $result = $conn->query("SELECT * FROM products");
+    while ($row = $result->fetch_assoc()) {
+        echo "<div class='col-12 col-sm-6 col-md-4 mb-4'>";
+        echo "<div class='card h-100'>";
+        echo "<img src='assets/img/{$row['image']}' class='card-img-top' alt='{$row['name']}'>";
+        echo "<div class='card-body'>";
+        echo "<h5 class='card-title'>{$row['name']}</h5>";
+        echo "<p class='card-text'>Price: \${$row['price']}</p>";
+        echo "<a href='view.php?id={$row['id']}' class='btn btn-warning btn-sm'>Details</a> ";
+        echo "<a href='cart.php?id={$row['id']}' class='btn btn-success btn-sm'>Add to Cart</a>";
+        echo "</div></div></div>";
+    }
+    ?>
+  </div>
 </div>
+
 
   <!-- Footer area -->
   <footer class="text-center mt- py-5">
